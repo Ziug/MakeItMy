@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="app-header">
+  <h1>Коллекция</h1>
+</header>
+
+{% if error %}<div class="error-banner">{{ error }}</div>{% endif %}
+
+<!-- Hero Import -->
+<section class="hero-import">
+  <form action="{{ url_for('api_import') }}" method="post">
+    <div class="hero-input-wrap">
+      <input class="hero-input" id="url" name="url" inputmode="url" placeholder="Вставьте ссылку на Яндекс Музыку…" required>
+      <button type="submit" class="fab-submit" aria-label="Импортировать">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </button>
+    </div>
+  </form>
+</section>
+
+
+<!-- Playlist List -->
+<section class="playlist-list" id="playlistList">
+  {% for playlist in playlists %}
+  <div class="playlist-swipe-wrap" data-id="{{ playlist.id }}" data-title="{{ playlist.title }}">
+    <div class="swipe-actions-left">
+      <button class="swipe-action rename" type="button" aria-label="Переименовать">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:2px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>Переименовать</span>
+      </button>
+    </div>
+    <div class="swipe-actions-right">
+      <button class="swipe-action delete" type="button" aria-label="Удалить">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:2px"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        <span>Удалить</span>
+      </button>
+    </div>
+    <a class="playlist-row" href="{{ url_for('playlist_page', playlist_id=playlist.id) }}">
+      <img class="playlist-thumb" src="{{ url_for('static', filename='default-cover.png') }}" data-playlist-id="{{ playlist.id }}" alt="">
+      <div class="playlist-row-info">
+        <div class="playlist-row-title">{{ playlist.title }}</div>
+        <div class="playlist-row-meta">{{ playlist.track_count or 0 }} треков · готово {{ playlist.done_count or 0 }}{% if playlist.error_count %} · ошибок {{ playlist.error_count }}{% endif %}</div>
+      </div>
+      <span class="playlist-row-chevron">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </span>
+    </a>
+  </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">🎵</div>
+      <div class="empty-state-title">Пока пусто</div>
+      <div class="empty-state-text">Вставьте ссылку выше, и треки появятся здесь</div>
+    </div>
+  {% endfor %}
+</section>
+
+<!-- Floating Action Button -->
+<button class="fab" id="homeFab" type="button" aria-label="Создать плейлист">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<div id="storageStats" style="margin-top:24px;text-align:center;font-size:12px;color:var(--muted);"></div>
+{% endblock %}
